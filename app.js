@@ -13,32 +13,36 @@ function initDB() {
 /**
  * Elementos da interface mapeados.
  */
-const elements = {
-    views: {
-        login: document.getElementById('login-view'),
-        register: document.getElementById('register-view'),
-        dashboard: document.getElementById('dashboard-view')
-    },
-    forms: {
-        login: document.getElementById('login-form'),
-        register: document.getElementById('register-form'),
-        todo: document.getElementById('todo-form')
-    },
-    links: {
-        goToRegister: document.getElementById('go-to-register'),
-        goToLogin: document.getElementById('go-to-login')
-    },
-    buttons: {
-        logout: document.getElementById('logout-btn')
-    },
-    texts: {
-        welcomeMessage: document.getElementById('welcome-message')
-    },
-    containers: {
-        todoList: document.getElementById('todo-list'),
-        emptyState: document.getElementById('empty-state')
-    }
-};
+let elements = {};
+
+function initializeElements() {
+    elements = {
+        views: {
+            login: document.getElementById('login-view'),
+            register: document.getElementById('register-view'),
+            dashboard: document.getElementById('dashboard-view')
+        },
+        forms: {
+            login: document.getElementById('login-form'),
+            register: document.getElementById('register-form'),
+            todo: document.getElementById('todo-form')
+        },
+        links: {
+            goToRegister: document.getElementById('go-to-register'),
+            goToLogin: document.getElementById('go-to-login')
+        },
+        buttons: {
+            logout: document.getElementById('logout-btn')
+        },
+        texts: {
+            welcomeMessage: document.getElementById('welcome-message')
+        },
+        containers: {
+            todoList: document.getElementById('todo-list'),
+            emptyState: document.getElementById('empty-state')
+        }
+    };
+}
 
 /**
  * Alterna a visualização ativa da aplicação.
@@ -317,16 +321,25 @@ function handleLogout() {
  * Verifica estado de autenticação
  */
 function checkAuthState() {
-    const currentUserText = localStorage.getItem('currentUser');
-    
-    if (currentUserText) {
-        const currentUser = JSON.parse(currentUserText);
-        elements.texts.welcomeMessage.textContent = `Olá, ${currentUser.name}`;
-        showView('dashboard');
-        renderTodos();
-    } else {
-        showView('login');
+    try {
+        const currentUserText = localStorage.getItem('currentUser');
+        
+        if (currentUserText && currentUserText !== 'undefined' && currentUserText !== 'null') {
+            const currentUser = JSON.parse(currentUserText);
+            if (currentUser && currentUser.email) {
+                elements.texts.welcomeMessage.textContent = `Olá, ${currentUser.name || 'Usuário'}`;
+                showView('dashboard');
+                renderTodos();
+                return;
+            }
+        }
+    } catch (e) {
+        console.error("Erro na autenticação:", e);
     }
+    
+    // Limpa estado se falhar e mostra login
+    localStorage.removeItem('currentUser');
+    showView('login');
 }
 
 /**
@@ -337,6 +350,25 @@ function setupEventListeners() {
     elements.forms.register.addEventListener('submit', handleRegister);
     elements.forms.todo.addEventListener('submit', handleAddTodo);
     
+    const forgotPasswordBtn = document.getElementById('forgot-password');
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            if (!email) {
+                showError('login-email-error', 'Digite seu e-mail para recuperar a senha.');
+                return;
+            }
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email === email);
+            if (user) {
+                alert(`Recuperação de senha\n\nSua senha é: ${user.password}\n\n(Em um sistema real, um link de redefinição seria enviado para o seu e-mail)`);
+            } else {
+                showError('login-general-error', 'E-mail não encontrado no sistema.');
+            }
+        });
+    }
+
     elements.links.goToRegister.addEventListener('click', (e) => {
         e.preventDefault();
         clearErrors('login');
@@ -358,6 +390,7 @@ function setupEventListeners() {
  * Init
  */
 function initApp() {
+    initializeElements();
     initDB();
     setupEventListeners();
     checkAuthState();
