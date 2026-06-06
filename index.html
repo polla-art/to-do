@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 min-h-screen font-sans flex items-center justify-center p-4 antialiased selection:bg-emerald-500/30">
+    
+    <!-- Login View -->
+    <div id="login-view" class="glass w-full max-w-md p-8 rounded-2xl transition-all duration-300">
+        <h2 class="text-3xl font-light mb-8 text-center tracking-wide text-white">Entrar</h2>
+        <form id="login-form" class="space-y-5" novalidate>
+            <div>
+                <label for="login-email" class="block text-sm font-medium text-slate-400 mb-1.5">E-mail</label>
+                <input type="email" id="login-email" class="w-full bg-[#0f172a]/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="seu@email.com">
+                <p id="login-email-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+            </div>
+            <div>
+                <label for="login-password" class="block text-sm font-medium text-slate-400 mb-1.5">Senha</label>
+                <input type="password" id="login-password" class="w-full bg-[#0f172a]/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="••••••••">
+                <p id="login-password-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+            </div>
+            <p id="login-general-error" class="text-rose-400 text-sm text-center hidden"></p>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20 mt-2">Acessar</button>
+        </form>
+        <div class="mt-6 text-center text-sm text-slate-400">
+            Não tem uma conta? <a href="#" id="go-to-register" class="text-emerald-400 hover:text-emerald-300 transition-colors ml-1">Cadastre-se</a>
+        </div>
+    </div>
+
+    <!-- Register View -->
+    <div id="register-view" class="glass w-full max-w-md p-8 rounded-2xl hidden transition-all duration-300">
+        <h2 class="text-3xl font-light mb-8 text-center tracking-wide text-white">Criar Conta</h2>
+        <form id="register-form" class="space-y-5" novalidate>
+            <div>
+                <label for="register-name" class="block text-sm font-medium text-slate-400 mb-1.5">Nome</label>
+                <input type="text" id="register-name" class="w-full bg-[#0f172a]/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="Seu Nome">
+                <p id="register-name-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+            </div>
+            <div>
+                <label for="register-email" class="block text-sm font-medium text-slate-400 mb-1.5">E-mail</label>
+                <input type="email" id="register-email" class="w-full bg-[#0f172a]/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="seu@email.com">
+                <p id="register-email-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+            </div>
+            <div>
+                <label for="register-password" class="block text-sm font-medium text-slate-400 mb-1.5">Senha</label>
+                <input type="password" id="register-password" class="w-full bg-[#0f172a]/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="••••••••">
+                <p id="register-password-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+            </div>
+            <p id="register-general-error" class="text-rose-400 text-sm text-center hidden"></p>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20 mt-2">Cadastrar</button>
+        </form>
+        <div class="mt-6 text-center text-sm text-slate-400">
+            Já tem uma conta? <a href="#" id="go-to-login" class="text-emerald-400 hover:text-emerald-300 transition-colors ml-1">Faça login</a>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="glass w-full max-w-4xl p-8 rounded-2xl hidden transition-all duration-300 min-h-[80vh] flex flex-col">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 pb-6 border-b border-slate-700/30 gap-4">
+            <div>
+                <h1 class="text-3xl font-light text-white tracking-wide">Minhas Tarefas</h1>
+                <p class="text-slate-400 mt-1.5" id="welcome-message">Olá, Usuário</p>
+            </div>
+            <button id="logout-btn" class="self-start sm:self-auto px-6 py-2.5 rounded-xl text-sm font-medium bg-[#0f172a]/50 border border-slate-700/50 hover:bg-slate-800 hover:text-white transition-all duration-200 text-slate-300 focus:outline-none focus:ring-1 focus:ring-slate-500 active:scale-[0.98]">
+                Sair
+            </button>
+        </div>
+        
+        <!-- Form Area -->
+        <div class="bg-[#0f172a]/40 p-6 rounded-xl border border-slate-700/30 mb-8 shadow-inner shadow-black/20">
+            <form id="todo-form" class="space-y-4" novalidate>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-3">
+                        <label for="todo-title" class="block text-sm font-medium text-slate-400 mb-1.5">Título da tarefa <span class="text-rose-400">*</span></label>
+                        <input type="text" id="todo-title" class="w-full bg-[#0f172a]/60 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="O que você precisa fazer?">
+                        <p id="todo-title-error" class="text-rose-400 text-xs mt-1.5 hidden"></p>
+                    </div>
+                    <div>
+                        <label for="todo-type" class="block text-sm font-medium text-slate-400 mb-1.5">Tipo</label>
+                        <div class="relative">
+                            <select id="todo-type" class="w-full bg-[#0f172a]/60 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
+                                <option value="Trabalho">Trabalho</option>
+                                <option value="Pessoal">Pessoal</option>
+                                <option value="Estudos">Estudos</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for="todo-desc" class="block text-sm font-medium text-slate-400 mb-1.5">Descrição (opcional)</label>
+                    <textarea id="todo-desc" rows="2" class="w-full bg-[#0f172a]/60 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none" placeholder="Detalhes adicionais..."></textarea>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Adicionar Tarefa
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Task List Area -->
+        <div class="flex-grow flex flex-col relative">
+            <div id="todo-list" class="space-y-4 flex-grow z-10">
+                <!-- Tarefas renderizadas dinamicamente pelo JS -->
+            </div>
+            
+            <!-- Empty state -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center py-12 text-center h-full absolute inset-0">
+                <div class="w-16 h-16 bg-[#0f172a]/40 rounded-full flex items-center justify-center mx-auto border border-slate-700/50 mb-4 shadow-inner">
+                    <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                </div>
+                <p class="text-slate-400 text-lg font-light tracking-wide">Nenhuma tarefa cadastrada ainda.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
